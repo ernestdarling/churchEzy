@@ -1,11 +1,9 @@
 <?php
 //Declare Variables
-$hostname = 'localhost';
-$username = 'sketchventures';
-$password = 'Darling2202';
-$database = 'churchezy_app';
-//Connect to MySQL Server
-$conn = mysql_connect($hostname, $username, $password);
-//Select Database
-mysql_select_db($database, $conn);
+$db_servername = "localhost";
+$db_username = "sketchventures";
+$db_password = "Darling@2202";
+$db_name = "churchezy_app";
+// Create connection
+$conn = new mysqli($db_servername, $db_username, $db_password, $db_name);
 ?>

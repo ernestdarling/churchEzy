@@ -4,21 +4,22 @@ include_once('includes/top.php');
 //Get Session Data from DB for this Church
 //Current Time
 $current_time = time();
-$query_session_all = mysql_query("SELECT * FROM sessions WHERE SessionChurch = '$admin_church'");
+$sql = "SELECT * FROM sessions WHERE SessionChurch = '$admin_church'";
+$query_session_all = $conn->query($sql);
 //Count Sessions of All Time
-$sessions_all = mysql_num_rows($query_session_all);
+$sessions_all = $query_session_all->num_rows;
 //Count Sessions TODAY
-$query_session_today = mysql_query("SELECT * FROM sessions WHERE SessionChurch = '$admin_church' && ($current_time - SessionTime) <= 86400");
-$sessions_today = mysql_num_rows($query_session_today);
+$query_session_today = $conn->query("SELECT * FROM sessions WHERE SessionChurch = '$admin_church' && ($current_time - SessionTime) <= 86400");
+$sessions_today = $query_session_today->num_rows;
 //Count Sessions WEEK
-$query_session_week = mysql_query("SELECT * FROM sessions WHERE SessionChurch = '$admin_church' && ($current_time - SessionTime) <= 604800");
-$sessions_week = mysql_num_rows($query_session_week);
+$query_session_week = $conn->query("SELECT * FROM sessions WHERE SessionChurch = '$admin_church' && ($current_time - SessionTime) <= 604800");
+$sessions_week = $query_session_week->num_rows;
 //Count Sessions MONTH
-$query_session_month = mysql_query("SELECT * FROM sessions WHERE SessionChurch = '$admin_church' && ($current_time - SessionTime) <= 2419200");
-$sessions_month = mysql_num_rows($query_session_month);
+$query_session_month = $conn->query("SELECT * FROM sessions WHERE SessionChurch = '$admin_church' && ($current_time - SessionTime) <= 2419200");
+$sessions_month = $query_session_month->num_rows;
 ?>
 <!DOCTYPE html>
-<!-- 
+<!--
 Template Name: Metronic - Responsive Admin Dashboard Template build with Twitter Bootstrap 3.3.4
 Version: 4.0.1
 Author: KeenThemes
@@ -980,7 +981,7 @@ License: You must have a valid license purchased only from themeforest(the above
 <!-- BEGIN CORE PLUGINS -->
 <!--[if lt IE 9]>
 <script src="assets/global/plugins/respond.min.js"></script>
-<script src="assets/global/plugins/excanvas.min.js"></script> 
+<script src="assets/global/plugins/excanvas.min.js"></script>
 <![endif]-->
 <script src="assets/global/plugins/jquery.min.js" type="text/javascript"></script>
 <script src="assets/global/plugins/jquery-migrate.min.js" type="text/javascript"></script>
@@ -1022,12 +1023,12 @@ License: You must have a valid license purchased only from themeforest(the above
 <script src="assets/admin/pages/scripts/tasks.js" type="text/javascript"></script>
 <!-- END PAGE LEVEL SCRIPTS -->
 <script>
-jQuery(document).ready(function() {    
+jQuery(document).ready(function() {
    Metronic.init(); // init metronic core componets
    Layout.init(); // init layout
    QuickSidebar.init(); // init quick sidebar
 Demo.init(); // init demo features
-   Index.init();   
+   Index.init();
    Index.initDashboardDaterange();
    Index.initJQVMAP(); // init index page's custom scripts
    Index.initCalendar(); // init index page's custom scripts

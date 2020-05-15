@@ -9,7 +9,7 @@ if (!isset($_POST['txtEmail']) || !isset($_POST['txtPassword'])) {
 else {
 	//User is From Login Page... Proceed
 	//Get Values from Form
-	$email = $_POST['txtEmail'];
+	$email = strtolower($_POST['txtEmail']);
 	$password = $_POST['txtPassword'];
 	$ref = $_POST['txtRef'];
 	//Check for Emptiness
@@ -22,22 +22,28 @@ else {
 	}
 	else {
 		//User Filled Out the Form Now Let's Check with DB
-		//Conenct to DB
-		include('db.php');
+		//*/Conenct to DB
+		include_once('db.php');
 		//Check User's Info Against DB
-		$query_admin = mysql_query("SELECT * FROM admin WHERE AdminEmail = '$email'");
+		$sql = 'SELECT * FROM admin WHERE AdminEmail = "$email"';
+		$query_admin = mysqli_query($conn, $sql);
+		if ($query_admin) {
+			echo 'good';
+		} else {
+			echo 'no good';
+		}
 		//Count Results to Verify
-		echo $count_admin = mysql_num_rows($query_admin);
-		if (empty($count_admin)) {
+		echo $count_admin = mysqli_num_rows($query_admin);
+		if ($count_admin < 1) {
 			//Admin Not Found in Database
 			//Redirect to Login with Error Message
 			$error = 'Oops! The email and/or password you entered did not match. Please try again.';
 			$URL = '../../login.php?error='.$error.'';
-			header("Location:$URL");
+			//header("Location:$URL");
 		}
 		else {
 			//Admin Info Found and Logged in Database
-			while ($row_admin = mysql_fetch_array($query_admin, MYSQL_ASSOC)) {
+			while ($row_admin = mysqli_fetch_assoc($query_admin)) {
 				//Retrieve Admin Info
 				$admin_id = $row_admin['AdminID'];
 				$admin_church = $row_admin['AdminChurch'];
@@ -45,7 +51,7 @@ else {
 			//Login Successful
 			//Update Admin Last Login
 			$lastlogin = time();
-			mysql_query("UPDATE admin SET AdminLastLogin = '$lastlogin' WHERE AdminID = '$admin_id'");
+			mysqli_query("UPDATE admin SET AdminLastLogin = '$lastlogin' WHERE AdminID = '$admin_id'");
 			//Set Admin ID COOKIE
 			$expire = time()+60*60*24; //Expires in 1 Day
 			setcookie('churchEziAdminID', $admin_id, $expire, '/');
@@ -61,7 +67,7 @@ else {
 				$URL = '../../'.$ref.'.php';
 				header("Location:$URL");
 			}
-		}
+		}//*/
 	}
 }
 ?>

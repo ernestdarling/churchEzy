@@ -7,40 +7,43 @@ if (isset($_COOKIE['churchEziAdminID'])) {
 	//Connect to DB
 	include_once('scripts/php/db.php');
 	//Get Admin Info from DB with Admin ID
-	$query_admin = mysql_query("SELECT * FROM admin WHERE AdminID = '$admin_id'");
-	while ($row_admin = mysql_fetch_array($query_admin, MYSQL_ASSOC)) {
-		$admin_fname = $row_admin['AdminFirstName'];
-		$admin_lname = $row_admin['AdminLastName'];
-		$admin_church = $row_admin['AdminChurch'];
-		$admin_role = $row_admin['AdminRole'];
-		$admin_telephone = $row_admin['AdminTelephone'];
-		$admin_lastlogin = $row_admin['AdminLastLogin'];
+	$sql = "SELECT * FROM admin WHERE AdminID = '$admin_id'";
+	$query_admin = $conn->query($sql);
+	while($row = $query_admin->fetch_assoc()) {
+		$admin_fname = $row['AdminFirstName'];
+		$admin_lname = $row['AdminLastName'];
+		$admin_church = $row['AdminChurch'];
+		$admin_role = $row['AdminRole'];
+		$admin_telephone = $row['AdminTelephone'];
+		$admin_lastlogin = $row['AdminLastLogin'];
 	}
 	//Get Church Name from Church ID
-	$query_church = mysql_query("SELECT * FROM church WHERE ChurchID = '$admin_church'");
-	while ($row_church = mysql_fetch_array($query_church, MYSQL_ASSOC)) {
-		$church_name = $row_church['ChurchName'];
-		$church_id = $row_church['ChurchID'];
-		$church_setup = $row_church['ChurchSetup'];
+	$sql = "SELECT * FROM church WHERE ChurchID = '$admin_church'";
+	$query_church = $conn->query($sql);
+	while ($row = $query_church->fetch_assoc()) {
+		$church_name = $row['ChurchName'];
+		$church_id = $row['ChurchID'];
+		$church_setup = $row['ChurchSetup'];
 		//$church_level = $row_church['ChurchLevel'];
 	}
 	//Get Church Plan
-	$query_plan = mysql_query("SELECT * FROM church_plans WHERE ChurchID = '$church_id'");
-	while ($row_plan = mysql_fetch_array($query_plan, MYSQL_ASSOC)) {
-		$plan_id = $row_plan['PlanID'];
+	$sql = "SELECT * FROM church_plans WHERE ChurchID = '$church_id'";
+	$query_plan = $conn->query($sql);
+	while ($row = $query_plan->fetch_assoc()) {
+		$plan_id = $row['PlanID'];
 	}
 	//Use Plan ID to Find Plan
-	$query_plan_info = mysql_query("SELECT * FROM plans WHERE PlanID = '$plan_id'");
+	$sql = "SELECT * FROM plans WHERE PlanID = '$plan_id'";
+	$query_plan_info = $conn->query($sql);
 	//Check if Church Has a Plan
-	if (mysql_num_rows($query_plan_info)) {
-		while ($row_plan_info = mysql_fetch_array($query_plan_info, MYSQL_ASSOC)) {
-			$plan_number = $row_plan_info['PlanNumber'];
-			$plan_description = $row_plan_info['PlanDescription'];
+	if ($query_plan_info->num_rows > 0) {
+		while ($row = $query_plan_info->fetch_assoc()) {
+			$plan_number = $row['PlanNumber'];
+			$plan_description = $row['PlanDescription'];
 		}
 		//Assign Plan Number to Church Level Variable
 		$church_level = $plan_number;
-	} 
-	else {
+	} else {
 		$church_level = -1;
 	}
 	//Check if Account is Locked
@@ -50,8 +53,7 @@ if (isset($_COOKIE['churchEziAdminID'])) {
 		if ($page=='lock') {
 			//Already on Lock Page
 			//Do Nothing...
-		}
-		else {
+		} else {
 			//Get Page Name for Reference
 			$ref = $page;
 			//Not On Lock Page
@@ -59,8 +61,7 @@ if (isset($_COOKIE['churchEziAdminID'])) {
 			$URL = 'lock.php?ref='.$ref.'';
 			header("Location:$URL");
 		}
-	}
-	else {
+	} else {
 		//Acount Not Locked
 		//User Logged In
 		if ($page=='login' || $page=='lock') {
@@ -68,8 +69,7 @@ if (isset($_COOKIE['churchEziAdminID'])) {
 			//Redirect to Dashboard
 			$URL = './';
 			header("Location:$URL");
-		}
-		else {
+		} else {
 			//Already not on Login Page
 			//Check if Church Has a Plan
 			if ($church_level < 0 && $page!='plan') {
@@ -77,21 +77,18 @@ if (isset($_COOKIE['churchEziAdminID'])) {
 				//Redirect to Plan Choosing Page
 				$URL = 'plan.php';
 				header("Location:$URL");
-			}
-			else {
+			} else {
 				//Church Has a Plan Do Nothing
 				//Do Nothing...
 			}
 		}
 	}
-}
-else {
+} else {
 	//User Not Logged In
 	if ($page=='login') {
 		//User on Login Page
 		//Stay Here for Login
-	}
-	else {
+	} else {
 		//Get Page Name for Reference
 		$ref = $page;
 		//Already not on Login Page
